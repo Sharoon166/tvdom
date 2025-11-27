@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Star, Calendar, Clock, Play, Users, Film } from 'lucide-svelte';
+	import { Star, Calendar, Clock, Play, Users, Film, Image } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -8,7 +8,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const { details, credits, videos, similar, type } = data;
+	const { details, credits, videos, similar, images, type } = data;
 	const mediaType = type as 'movie' | 'tv';
 	const title = type === 'movie' ? details.title : details.name;
 	const releaseDate = type === 'movie' ? details.release_date : details.first_air_date;
@@ -19,7 +19,7 @@
 		? `https://image.tmdb.org/t/p/w500${details.poster_path}`
 		: '';
 
-		const cast = credits?.cast?.slice(0, 12) || [];
+	const cast = credits?.cast?.slice(0, 12) || [];
 	const crew = credits?.crew?.filter((c: any) => 
 		['Director', 'Writer', 'Screenplay', 'Producer'].includes(c.job)
 	).slice(0, 6) || [];
@@ -27,11 +27,44 @@
 	const trailer = videos?.results?.find((v: any) => 
 		v.type === 'Trailer' && v.site === 'YouTube'
 	) || videos?.results?.[0];
+
+	const backdrops = images?.backdrops || [];
+	const posters = images?.posters || [];
+	const allImages = [...backdrops, ...posters];
+
+	let lightboxOpen = $state(false);
+	let currentIndex = $state(0);
+
+	function openLightbox(i: number) {
+		currentIndex = i;
+		lightboxOpen = true;
+	}
+
+	function closeLightbox() {
+		lightboxOpen = false;
+	}
+
+	function prevImage() {
+		currentIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+	}
+
+	function nextImage() {
+		currentIndex = (currentIndex + 1) % allImages.length;
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (!lightboxOpen) return;
+		if (e.key === 'Escape') closeLightbox();
+		if (e.key === 'ArrowLeft') prevImage();
+		if (e.key === 'ArrowRight') nextImage();
+	}
 </script>
 
 <svelte:head>
 	<title>{title} - TVDom</title>
 </svelte:head>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="min-h-screen">
 	<!-- Hero Section with Backdrop -->
@@ -135,6 +168,101 @@
 			</div>
 		</div>
 
+		<!-- Image Gallery -->
+		{#if allImages.length > 0}
+			<section class="mb-16">
+				<div class="mb-8">
+					<h2 class="text-3xl md:text-4xl font-bold flex items-center gap-3">
+						<Image class="w-8 h-8" />
+						Gallery
+					</h2>
+				</div>
+				<div class="overflow-x-auto scrollbar-hide -mx-4 md:mx-0">
+					<div class="flex gap-4 px-4 md:px-0 pb-4">
+						{#each allImages.slice(0, 20) as img, i}
+							<button
+								type="button"
+								onclick={() => openLightbox(i)}
+								class="flex-shrink-0 w-[280px] h-[180px] overflow-hidden rounded-lg bg-muted hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 border-transparent hover:border-primary"
+							>
+								<img 
+									src={`https://image.tmdb.org/t/p/w500${img.file_path}`} 
+									alt={title} 
+									class="w-full h-full object-cover object-center" 
+									loading="lazy" 
+								/>
+							</button>
+						{/each}
+					</div>
+				</div>
+			</section>
+		{/if}
+
+		{#if lightboxOpen}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+				<button 
+					type="button" 
+					class="absolute inset-0" 
+					onclick={closeLightbox} 
+					aria-label="Close lightbox"
+				></button>
+				
+				<div class="relative z-10 max-w-6xl w-full mx-4">
+					<!-- Previous Button -->
+					<button 
+						type="button"
+						class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110" 
+						onclick={prevImage} 
+						aria-label="Previous image"
+					>
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+						</svg>
+					</button>
+
+					<!-- Image -->
+					<div class="bg-muted/20 rounded-xl overflow-hidden shadow-2xl">
+						<img 
+							src={`https://image.tmdb.org/t/p/original${allImages[currentIndex].file_path}`} 
+							alt={title} 
+							class="w-full h-auto max-h-[85vh] object-contain" 
+						/>
+					</div>
+
+					<!-- Next Button -->
+					<button 
+						type="button"
+						class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110" 
+						onclick={nextImage} 
+						aria-label="Next image"
+					>
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</button>
+
+					<!-- Close Button -->
+					<button 
+						type="button"
+						class="absolute right-4 top-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all duration-300 hover:scale-110" 
+						onclick={closeLightbox} 
+						aria-label="Close"
+					>
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						</svg>
+					</button>
+
+					<!-- Image Counter -->
+					<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm">
+						{currentIndex + 1} / {allImages.length}
+					</div>
+				</div>
+			</div>
+		{/if}
+
 		<!-- Cast Section -->
 		{#if cast.length > 0}
 			<section class="mb-16">
@@ -146,28 +274,52 @@
 				</div>
 				<div class="overflow-x-auto scrollbar-hide -mx-4 md:mx-0">
 					<div class="flex gap-6 px-4 md:px-0 pb-4">
-							{#each cast as actor}
-								<a href="/person/{actor.id}" class="flex-shrink-0 w-[160px]">
-									<Card.Root class="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-									<div class="aspect-[2/3] overflow-hidden bg-muted">
+						{#each cast as actor}
+							<a href="/person/{actor.id}" class="flex-shrink-0 w-80 group block">
+								<Card.Root class="relative overflow-hidden rounded-3xl bg-card/40 border border-border/60 transition-colors duration-300">
+									<div class="relative h-80 md:h-96 w-full">
 										{#if actor.profile_path}
 											<img
-												src="https://image.tmdb.org/t/p/w300{actor.profile_path}"
+												src="https://image.tmdb.org/t/p/w500{actor.profile_path}"
 												alt={actor.name}
-												class="w-full h-full object-cover"
+												class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+												loading="lazy"
 											/>
 										{:else}
 											<div class="w-full h-full flex items-center justify-center bg-muted">
-												<Users class="w-12 h-12 text-muted-foreground" />
+												<Users class="w-20 h-20 text-muted-foreground/30" />
 											</div>
 										{/if}
+
+										<!-- Gradient overlay -->
+										<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+										<!-- Content -->
+										<div class="absolute inset-x-0 bottom-0 p-5 md:p-6">
+											<div class="space-y-3">
+												<!-- Badge -->
+												<div class="flex items-center gap-2">
+													<Badge class="bg-white/10 backdrop-blur px-3 py-1 uppercase tracking-wide text-[0.7rem] md:text-xs">
+														Cast
+													</Badge>
+												</div>
+
+												<!-- Actor Name -->
+												<Card.Title class="text-xl md:text-2xl font-bold text-white drop-shadow-sm line-clamp-2 group-hover:text-primary transition-colors">
+													{actor.name}
+												</Card.Title>
+
+												<!-- Character -->
+												{#if actor.character}
+													<p class="text-xs md:text-sm text-gray-200/90 leading-relaxed line-clamp-2">
+														as {actor.character}
+													</p>
+												{/if}
+											</div>
+										</div>
 									</div>
-									<Card.Content class="p-4">
-										<p class="font-semibold text-sm line-clamp-2 mb-1">{actor.name}</p>
-										<p class="text-xs text-muted-foreground line-clamp-2">{actor.character}</p>
-									</Card.Content>
 								</Card.Root>
-								</a>
+							</a>
 						{/each}
 					</div>
 				</div>

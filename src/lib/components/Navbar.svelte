@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { Search, Film, Tv, Home, Users, Menu, X, User } from 'lucide-svelte';
+	import { Search, Film, Tv, Home, Users, Menu, X } from 'lucide-svelte';
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import ThemeToggle from './ThemeToggle.svelte';
 
 	let searchQuery = '';
 
@@ -54,10 +55,7 @@
 				</a>
 
 				<Button href="/" variant="secondary" class="ml-2 hidden lg:inline-flex">Explore</Button>
-				<Button href="/signin" variant="ghost" class="ml-2">
-					<User class="w-4 h-4 mr-2" />
-					<span class="hidden sm:inline">Sign in</span>
-				</Button>
+				<ThemeToggle />
 			</div>
 
 			<!-- Mobile controls using Dialog sheet -->
@@ -113,10 +111,10 @@
 									<Users class="w-5 h-5" />
 									<span>People</span>
 								</a>
-								<a href="/signin" class="flex items-center gap-3 p-2 rounded-md hover:bg-accent/5">
-									<User class="w-5 h-5" />
-									<span>Sign in</span>
-								</a>
+								<div class="flex items-center gap-3 p-2">
+									<ThemeToggle />
+									<span>Theme</span>
+								</div>
 							</nav>
 						</DialogPrimitive.Content>
 					</DialogPrimitive.Portal>

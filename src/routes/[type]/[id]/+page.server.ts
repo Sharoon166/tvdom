@@ -1,4 +1,4 @@
-import { getDetails, getCredits, getVideos, getSimilar } from '$lib/tmdb';
+import { getDetails, getCredits, getVideos, getSimilar, getImages } from '$lib/tmdb';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
@@ -11,11 +11,12 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	try {
 		const mediaId = parseInt(id);
-		const [details, credits, videos, similar] = await Promise.all([
+		const [details, credits, videos, similar, images] = await Promise.all([
 			getDetails(type, mediaId),
 			getCredits(type, mediaId),
 			getVideos(type, mediaId),
-			getSimilar(type, mediaId)
+			getSimilar(type, mediaId),
+			getImages(type, mediaId)
 		]);
 
 		return {
@@ -23,6 +24,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			credits,
 			videos,
 			similar,
+			images,
 			type
 		};
 	} catch (err) {

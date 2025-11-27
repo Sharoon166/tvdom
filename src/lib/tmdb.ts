@@ -82,7 +82,11 @@ export async function getPersonCombinedCredits(id: number) {
 }
 
 export async function getPersonImages(id: number) {
-    return fetchFromTMDB(`/person/${id}/images`);
+	return fetchFromTMDB(`/person/${id}/images`);
+}
+
+export async function getImages(mediaType: 'movie' | 'tv', id: number) {
+	return fetchFromTMDB(`/${mediaType}/${id}/images`);
 }
 
 export async function getNowPlaying(page: number = 1) {
