@@ -1,32 +1,47 @@
 <script lang="ts">
-	import { Star, Calendar, Clock, Play, Users, Film, Image } from 'lucide-svelte';
-	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import MediaCard from '$lib/components/MediaCard.svelte';
-	import type { PageData } from './$types';
+	import {
+		Star,
+		Calendar,
+		Clock,
+		Play,
+		Users,
+		Film,
+		Image,
+	} from "lucide-svelte";
+	import * as Card from "$lib/components/ui/card";
+	import { Badge } from "$lib/components/ui/badge";
+	import { Button } from "$lib/components/ui/button";
+	import MediaCard from "$lib/components/MediaCard.svelte";
+	import type { PageData } from "./$types";
 
 	let { data }: { data: PageData } = $props();
 
 	const { details, credits, videos, similar, images, type } = data;
-	const mediaType = type as 'movie' | 'tv';
-	const title = type === 'movie' ? details.title : details.name;
-	const releaseDate = type === 'movie' ? details.release_date : details.first_air_date;
+	const mediaType = type as "movie" | "tv";
+	const title = type === "movie" ? details.title : details.name;
+	const releaseDate =
+		type === "movie" ? details.release_date : details.first_air_date;
 	const backdropUrl = details.backdrop_path
 		? `https://image.tmdb.org/t/p/original${details.backdrop_path}`
-		: '';
+		: "";
 	const posterUrl = details.poster_path
 		? `https://image.tmdb.org/t/p/w500${details.poster_path}`
-		: '';
+		: "";
 
 	const cast = credits?.cast?.slice(0, 12) || [];
-	const crew = credits?.crew?.filter((c: any) => 
-		['Director', 'Writer', 'Screenplay', 'Producer'].includes(c.job)
-	).slice(0, 6) || [];
-	
-	const trailer = videos?.results?.find((v: any) => 
-		v.type === 'Trailer' && v.site === 'YouTube'
-	) || videos?.results?.[0];
+	const crew =
+		credits?.crew
+			?.filter((c: any) =>
+				["Director", "Writer", "Screenplay", "Producer"].includes(
+					c.job,
+				),
+			)
+			.slice(0, 6) || [];
+
+	const trailer =
+		videos?.results?.find(
+			(v: any) => v.type === "Trailer" && v.site === "YouTube",
+		) || videos?.results?.[0];
 
 	const backdrops = images?.backdrops || [];
 	const posters = images?.posters || [];
@@ -54,9 +69,9 @@
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (!lightboxOpen) return;
-		if (e.key === 'Escape') closeLightbox();
-		if (e.key === 'ArrowLeft') prevImage();
-		if (e.key === 'ArrowRight') nextImage();
+		if (e.key === "Escape") closeLightbox();
+		if (e.key === "ArrowLeft") prevImage();
+		if (e.key === "ArrowRight") nextImage();
 	}
 </script>
 
@@ -70,9 +85,17 @@
 	<!-- Hero Section with Backdrop -->
 	<div class="relative h-[60vh] md:h-[70vh] w-full overflow-hidden">
 		{#if backdropUrl}
-			<img src={backdropUrl} alt={title} class="w-full h-full object-cover" />
-			<div class="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/30"></div>
-			<div class="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent"></div>
+			<img
+				src={backdropUrl}
+				alt={title}
+				class="w-full h-full object-cover"
+			/>
+			<div
+				class="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/30"
+			></div>
+			<div
+				class="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent"
+			></div>
 		{/if}
 	</div>
 
@@ -91,35 +114,65 @@
 			<!-- Main Info -->
 			<div class="flex-1 space-y-6">
 				<div>
-					<h1 class="text-4xl md:text-6xl font-bold text-foreground mb-3 drop-shadow-lg">{title}</h1>
+					<h1
+						class="text-4xl md:text-6xl font-bold text-foreground mb-3 drop-shadow-lg"
+					>
+						{title}
+					</h1>
 					{#if details.tagline}
-						<p class="text-xl md:text-2xl text-muted-foreground italic">{details.tagline}</p>
+						<p
+							class="text-xl md:text-2xl text-muted-foreground italic"
+						>
+							{details.tagline}
+						</p>
 					{/if}
 				</div>
 
 				<div class="flex flex-wrap gap-3 items-center">
-					<Badge variant="secondary" class="flex items-center gap-2 px-4 py-2 text-lg bg-card/80 backdrop-blur">
+					<Badge
+						variant="secondary"
+						class="flex items-center gap-2 px-4 py-2 text-lg bg-card/80 backdrop-blur"
+					>
 						<Star class="w-5 h-5 fill-yellow-400 text-yellow-400" />
-						<span class="font-bold">{details.vote_average?.toFixed(1)}</span>
+						<span class="font-bold"
+							>{details.vote_average?.toFixed(1)}</span
+						>
 						<span class="text-muted-foreground text-sm">/ 10</span>
 					</Badge>
 
 					{#if releaseDate}
-						<Badge variant="secondary" class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur">
+						<Badge
+							variant="secondary"
+							class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur"
+						>
 							<Calendar class="w-5 h-5" />
 							<span>{new Date(releaseDate).getFullYear()}</span>
 						</Badge>
 					{/if}
 
-					{#if type === 'movie' && details.runtime}
-						<Badge variant="secondary" class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur">
+					{#if type === "movie" && details.runtime}
+						<Badge
+							variant="secondary"
+							class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur"
+						>
 							<Clock class="w-5 h-5" />
-							<span>{Math.floor(details.runtime / 60)}h {details.runtime % 60}m</span>
+							<span
+								>{Math.floor(details.runtime / 60)}h {details.runtime %
+									60}m</span
+							>
 						</Badge>
-					{:else if type === 'tv' && details.number_of_seasons}
-						<Badge variant="secondary" class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur">
+					{:else if type === "tv" && details.number_of_seasons}
+						<Badge
+							variant="secondary"
+							class="flex items-center gap-2 px-4 py-2 text-base bg-card/80 backdrop-blur"
+						>
 							<Film class="w-5 h-5" />
-							<span>{details.number_of_seasons} Season{details.number_of_seasons > 1 ? 's' : ''}</span>
+							<span
+								>{details.number_of_seasons} Season{details.number_of_seasons >
+								1
+									? "s"
+									: ""}</span
+							>
 						</Badge>
 					{/if}
 				</div>
@@ -127,7 +180,10 @@
 				{#if details.genres && details.genres.length > 0}
 					<div class="flex flex-wrap gap-2">
 						{#each details.genres as genre}
-							<Badge variant="outline" class="px-4 py-1.5 text-sm bg-card/50 backdrop-blur">
+							<Badge
+								variant="outline"
+								class="px-4 py-1.5 text-sm bg-card/50 backdrop-blur"
+							>
 								{genre.name}
 							</Badge>
 						{/each}
@@ -135,9 +191,13 @@
 				{/if}
 
 				{#if trailer}
-					<Button 
+					<Button
 						class="gap-2 px-6 py-6 text-lg"
-						onclick={() => window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank')}
+						onclick={() =>
+							window.open(
+								`https://www.youtube.com/watch?v=${trailer.key}`,
+								"_blank",
+							)}
 					>
 						<Play class="w-5 h-5 fill-current" />
 						Watch Trailer
@@ -149,7 +209,9 @@
 						<Film class="w-6 h-6" />
 						Overview
 					</h2>
-					<p class="text-muted-foreground leading-relaxed text-lg">{details.overview}</p>
+					<p class="text-muted-foreground leading-relaxed text-lg">
+						{details.overview}
+					</p>
 				</div>
 
 				{#if crew.length > 0}
@@ -158,8 +220,12 @@
 						<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 							{#each crew as member}
 								<div>
-									<p class="font-semibold text-foreground">{member.name}</p>
-									<p class="text-sm text-muted-foreground">{member.job}</p>
+									<p class="font-semibold text-foreground">
+										{member.name}
+									</p>
+									<p class="text-sm text-muted-foreground">
+										{member.job}
+									</p>
 								</div>
 							{/each}
 						</div>
@@ -172,7 +238,9 @@
 		{#if allImages.length > 0}
 			<section class="mb-16">
 				<div class="mb-8">
-					<h2 class="text-3xl md:text-4xl font-bold flex items-center gap-3">
+					<h2
+						class="text-3xl md:text-4xl font-bold flex items-center gap-3"
+					>
 						<Image class="w-8 h-8" />
 						Gallery
 					</h2>
@@ -185,11 +253,11 @@
 								onclick={() => openLightbox(i)}
 								class="flex-shrink-0 w-[280px] h-[180px] overflow-hidden rounded-lg bg-muted hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 border-transparent hover:border-primary"
 							>
-								<img 
-									src={`https://image.tmdb.org/t/p/w500${img.file_path}`} 
-									alt={title} 
-									class="w-full h-full object-cover object-center" 
-									loading="lazy" 
+								<img
+									src={`https://image.tmdb.org/t/p/w500${img.file_path}`}
+									alt={title}
+									class="w-full h-full object-cover object-center"
+									loading="lazy"
 								/>
 							</button>
 						{/each}
@@ -201,62 +269,98 @@
 		{#if lightboxOpen}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-				<button 
-					type="button" 
-					class="absolute inset-0" 
-					onclick={closeLightbox} 
+			<div
+				class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+			>
+				<button
+					type="button"
+					class="absolute inset-0"
+					onclick={closeLightbox}
 					aria-label="Close lightbox"
 				></button>
-				
+
 				<div class="relative z-10 max-w-6xl w-full mx-4">
 					<!-- Previous Button -->
-					<button 
+					<button
 						type="button"
-						class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110" 
-						onclick={prevImage} 
+						class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110"
+						onclick={prevImage}
 						aria-label="Previous image"
 					>
-						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+						<svg
+							class="w-6 h-6"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15 19l-7-7 7-7"
+							/>
 						</svg>
 					</button>
 
 					<!-- Image -->
-					<div class="bg-muted/20 rounded-xl overflow-hidden shadow-2xl">
-						<img 
-							src={`https://image.tmdb.org/t/p/original${allImages[currentIndex].file_path}`} 
-							alt={title} 
-							class="w-full h-auto max-h-[85vh] object-contain" 
+					<div
+						class="bg-muted/20 rounded-xl overflow-hidden shadow-2xl"
+					>
+						<img
+							src={`https://image.tmdb.org/t/p/original${allImages[currentIndex].file_path}`}
+							alt={title}
+							class="w-full h-auto max-h-[85vh] object-contain"
 						/>
 					</div>
 
 					<!-- Next Button -->
-					<button 
+					<button
 						type="button"
-						class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110" 
-						onclick={nextImage} 
+						class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-4 rounded-full transition-all duration-300 hover:scale-110"
+						onclick={nextImage}
 						aria-label="Next image"
 					>
-						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						<svg
+							class="w-6 h-6"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 5l7 7-7 7"
+							/>
 						</svg>
 					</button>
 
 					<!-- Close Button -->
-					<button 
+					<button
 						type="button"
-						class="absolute right-4 top-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all duration-300 hover:scale-110" 
-						onclick={closeLightbox} 
+						class="absolute right-4 top-4 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all duration-300 hover:scale-110"
+						onclick={closeLightbox}
 						aria-label="Close"
 					>
-						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						<svg
+							class="w-6 h-6"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 
 					<!-- Image Counter -->
-					<div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm">
+					<div
+						class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-sm"
+					>
 						{currentIndex + 1} / {allImages.length}
 					</div>
 				</div>
@@ -267,7 +371,9 @@
 		{#if cast.length > 0}
 			<section class="mb-16">
 				<div class="mb-8">
-					<h2 class="text-3xl md:text-4xl font-bold flex items-center gap-3">
+					<h2
+						class="text-3xl md:text-4xl font-bold flex items-center gap-3"
+					>
 						<Users class="w-8 h-8" />
 						Cast
 					</h2>
@@ -275,8 +381,13 @@
 				<div class="overflow-x-auto scrollbar-hide -mx-4 md:mx-0">
 					<div class="flex gap-6 px-4 md:px-0 pb-4">
 						{#each cast as actor}
-							<a href="/person/{actor.id}" class="flex-shrink-0 w-80 group block">
-								<Card.Root class="relative overflow-hidden rounded-3xl bg-card/40 border border-border/60 transition-colors duration-300">
+							<a
+								href="/person/{actor.id}"
+								class="flex-shrink-0 w-80 group block"
+							>
+								<Card.Root
+									class="relative overflow-hidden rounded-3xl bg-card/40 border border-border/60 transition-colors duration-300"
+								>
 									<div class="relative h-80 md:h-96 w-full">
 										{#if actor.profile_path}
 											<img
@@ -286,32 +397,48 @@
 												loading="lazy"
 											/>
 										{:else}
-											<div class="w-full h-full flex items-center justify-center bg-muted">
-												<Users class="w-20 h-20 text-muted-foreground/30" />
+											<div
+												class="w-full h-full flex items-center justify-center bg-muted"
+											>
+												<Users
+													class="w-20 h-20 text-muted-foreground/30"
+												/>
 											</div>
 										{/if}
 
 										<!-- Gradient overlay -->
-										<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+										<div
+											class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+										></div>
 
 										<!-- Content -->
-										<div class="absolute inset-x-0 bottom-0 p-5 md:p-6">
+										<div
+											class="absolute inset-x-0 bottom-0 p-5 md:p-6"
+										>
 											<div class="space-y-3">
 												<!-- Badge -->
-												<div class="flex items-center gap-2">
-													<Badge class="bg-white/10 backdrop-blur px-3 py-1 uppercase tracking-wide text-[0.7rem] md:text-xs">
+												<div
+													class="flex items-center gap-2"
+												>
+													<Badge
+														class="bg-white/10 backdrop-blur px-3 py-1 uppercase tracking-wide text-[0.7rem] md:text-xs"
+													>
 														Cast
 													</Badge>
 												</div>
 
 												<!-- Actor Name -->
-												<Card.Title class="text-xl md:text-2xl font-bold text-white drop-shadow-sm line-clamp-2 group-hover:text-primary transition-colors">
+												<Card.Title
+													class="text-xl md:text-2xl font-bold text-white drop-shadow-sm line-clamp-2 group-hover:text-primary transition-colors"
+												>
 													{actor.name}
 												</Card.Title>
 
 												<!-- Character -->
 												{#if actor.character}
-													<p class="text-xs md:text-sm text-gray-200/90 leading-relaxed line-clamp-2">
+													<p
+														class="text-xs md:text-sm text-gray-200/90 leading-relaxed line-clamp-2"
+													>
 														as {actor.character}
 													</p>
 												{/if}
@@ -329,26 +456,38 @@
 		<!-- Additional Info -->
 		<section class="mb-16">
 			<div class="grid md:grid-cols-2 gap-8">
-				{#if type === 'tv'}
+				{#if type === "tv"}
 					<Card.Root class="p-6">
 						<h3 class="text-xl font-bold mb-4">TV Show Info</h3>
 						<div class="space-y-2 text-sm">
 							{#if details.number_of_seasons}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Seasons:</span>
-									<span class="font-semibold">{details.number_of_seasons}</span>
+									<span class="text-muted-foreground"
+										>Seasons:</span
+									>
+									<span class="font-semibold"
+										>{details.number_of_seasons}</span
+									>
 								</div>
 							{/if}
 							{#if details.number_of_episodes}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Episodes:</span>
-									<span class="font-semibold">{details.number_of_episodes}</span>
+									<span class="text-muted-foreground"
+										>Episodes:</span
+									>
+									<span class="font-semibold"
+										>{details.number_of_episodes}</span
+									>
 								</div>
 							{/if}
 							{#if details.status}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Status:</span>
-									<span class="font-semibold">{details.status}</span>
+									<span class="text-muted-foreground"
+										>Status:</span
+									>
+									<span class="font-semibold"
+										>{details.status}</span
+									>
 								</div>
 							{/if}
 						</div>
@@ -359,20 +498,36 @@
 						<div class="space-y-2 text-sm">
 							{#if details.budget}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Budget:</span>
-									<span class="font-semibold">${(details.budget / 1000000).toFixed(1)}M</span>
+									<span class="text-muted-foreground"
+										>Budget:</span
+									>
+									<span class="font-semibold"
+										>${(details.budget / 1000000).toFixed(
+											1,
+										)}M</span
+									>
 								</div>
 							{/if}
 							{#if details.revenue}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Revenue:</span>
-									<span class="font-semibold">${(details.revenue / 1000000).toFixed(1)}M</span>
+									<span class="text-muted-foreground"
+										>Revenue:</span
+									>
+									<span class="font-semibold"
+										>${(details.revenue / 1000000).toFixed(
+											1,
+										)}M</span
+									>
 								</div>
 							{/if}
 							{#if details.status}
 								<div class="flex justify-between">
-									<span class="text-muted-foreground">Status:</span>
-									<span class="font-semibold">{details.status}</span>
+									<span class="text-muted-foreground"
+										>Status:</span
+									>
+									<span class="font-semibold"
+										>{details.status}</span
+									>
 								</div>
 							{/if}
 						</div>
@@ -392,7 +547,10 @@
 											class="h-6 object-contain"
 										/>
 									{:else}
-										<span class="text-sm text-muted-foreground">{company.name}</span>
+										<span
+											class="text-sm text-muted-foreground"
+											>{company.name}</span
+										>
 									{/if}
 								</div>
 							{/each}
@@ -406,7 +564,9 @@
 		{#if similar?.results && similar.results.length > 0}
 			<section class="mb-16">
 				<div class="mb-8">
-					<h2 class="text-3xl md:text-4xl font-bold">More Like This</h2>
+					<h2 class="text-3xl md:text-4xl font-bold">
+						More Like This
+					</h2>
 				</div>
 				<div class="overflow-x-auto scrollbar-hide -mx-4 md:mx-0">
 					<div class="flex gap-16 px-4 md:px-0 pb-4">
@@ -431,11 +591,11 @@
 		scrollbar-width: none;
 		scroll-behavior: smooth;
 	}
-	
+
 	.overflow-x-auto {
 		scroll-snap-type: x proximity;
 	}
-	
+
 	.flex-shrink-0 {
 		scroll-snap-align: start;
 	}

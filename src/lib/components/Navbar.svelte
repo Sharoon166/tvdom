@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Search, Film, Tv, Home, Users, Menu, X } from 'lucide-svelte';
+	import logoUrl from '$lib/assets/logo.png';
 	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
@@ -21,10 +22,10 @@
 			<!-- Logo + brand -->
 			<div class="flex items-center gap-4">
 				<a href="/" class="flex items-center gap-3">
-					<div class="rounded-md p-1 bg-primary/10 backdrop-blur-sm">
-						<Film class="w-7 h-7 text-primary" />
+					<div class="rounded-md p-1 ">
+						<img src={logoUrl} alt="TVDom logo" class=" size-10 object-contain object-center" />
 					</div>
-					<span class="text-2xl font-semibold text-foreground font-mono tracking-tight" style="font-family: 'Fira Code', ui-monospace, monospace;">TVDom</span>
+					
 				</a>
 				<span class="hidden md:inline-block text-sm text-muted-foreground">Discover movies & TV shows</span>
 			</div>
@@ -61,29 +62,25 @@
 			<!-- Mobile controls using Dialog sheet -->
 			<div class="flex items-center md:hidden">
 				<DialogPrimitive.Root>
-					<DialogPrimitive.Trigger >
-						<button aria-label="Open menu" class="p-2 rounded-md hover:bg-accent/10">
+						<DialogPrimitive.Trigger class="p-2 rounded-md hover:bg-accent/10" aria-label="Open menu">
 							<Menu class="w-6 h-6" />
-						</button>
-					</DialogPrimitive.Trigger>
+						</DialogPrimitive.Trigger>
 
 					<DialogPrimitive.Portal>
 						<DialogPrimitive.Overlay class="fixed inset-0 bg-black/40 backdrop-blur-sm" />
 
-						<DialogPrimitive.Content
-							class="sheet-content fixed right-0 top-0 h-full w-[78%] max-w-xs bg-background p-4 shadow-lg"
-						>
+							<DialogPrimitive.Content
+								class="sheet-content fixed left-0 top-0 w-full max-h-[70vh] bg-background p-4 shadow-lg rounded-b-lg"
+							>
 							<div class="flex items-center justify-between mb-4">
 								<div class="flex items-center gap-3">
-									<div class="rounded-md p-1 bg-primary/10">
-										<Film class="w-6 h-6 text-primary" />
+									<div class="rounded-md p-1 bg-primary/10 overflow-hidden">
+										<img src={logoUrl} alt="TVDom logo" class="w-6 h-6 object-contain" />
 									</div>
 									<span class="font-semibold">TVDom</span>
 								</div>
-								<DialogPrimitive.Close >
-									<button class="p-2 rounded-md hover:bg-accent/10">
-										<X class="w-5 h-5" />
-									</button>
+								<DialogPrimitive.Close class="p-2 rounded-md hover:bg-accent/10" aria-label="Close menu">
+									<X class="w-5 h-5" />
 								</DialogPrimitive.Close>
 							</div>
 
@@ -130,19 +127,21 @@
 	/* Sheet enter/exit animations for the dialog content. bits-ui sets a data-state attribute
 	   on the content element (open / closed). We use transform + opacity for a smooth slide. */
 	.sheet-content {
-		transform: translateX(100%);
+		transform: translateY(-100%);
 		opacity: 0;
 		transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 180ms linear;
 		will-change: transform, opacity;
+		left: 0;
+		right: 0;
 	}
 
 	.sheet-content[data-state="open"] {
-		transform: translateX(0%);
+		transform: translateY(0%);
 		opacity: 1;
 	}
 
 	.sheet-content[data-state="closed"] {
-		transform: translateX(100%);
+		transform: translateY(-100%);
 		opacity: 0;
 	}
 

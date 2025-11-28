@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PersonCard from '$lib/components/PersonCard.svelte';
-	import { Users } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRightIcon, Users } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { PageData } from './$types';
@@ -32,7 +32,7 @@
 				{#if data.people.length === 0}
 					<p class="text-muted-foreground text-center py-12">No people to show right now.</p>
 				{:else}
-					<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+					<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 						{#each data.people as person}
 							<PersonCard {person} />
 						{/each}
@@ -47,7 +47,7 @@
 									variant="outline" 
 									class="px-6 py-6"
 								>
-									← Previous
+									<ChevronLeft/> Previous
 								</Button>
 							</a>
 						{/if}
@@ -62,7 +62,7 @@
 									variant="outline" 
 									class="px-6 py-6"
 								>
-									Next →
+									Next <ChevronRightIcon/>
 								</Button>
 							</a>
 						{/if}

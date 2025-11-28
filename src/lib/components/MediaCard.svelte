@@ -22,7 +22,7 @@
 </script>
 
 <a href="/{type}/{media.id}" class="group block">
-	<Card.Root class="relative overflow-hidden rounded-3xl w-80 bg-card/40 border border-border/60 transition-colors duration-300">
+	<Card.Root class="relative overflow-hidden rounded-3xl w-full lg:w-80 bg-card/40 border border-border/60 transition-colors duration-300">
 		<!-- Full-card image -->
 		<div class="relative h-80 md:h-96 w-full">
 			<img

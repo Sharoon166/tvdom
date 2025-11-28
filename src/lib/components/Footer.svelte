@@ -19,7 +19,7 @@
 
 <footer class="bg-card border-t border-border mt-16">
 	<div class="max-w-[85rem] mx-auto px-4 py-10">
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+		<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-4 gap-8">
 			<!-- Brand -->
 			<div>
 				<div class="flex items-center gap-2 mb-3">

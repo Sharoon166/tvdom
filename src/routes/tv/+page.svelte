@@ -2,7 +2,7 @@
 import MediaCard from '$lib/components/MediaCard.svelte';
 import { Button } from '$lib/components/ui/button';
 import { Badge } from '$lib/components/ui/badge';
-import { Tv, TrendingUp, Star, Calendar } from 'lucide-svelte';
+import { Tv, TrendingUp, Star, Calendar, ChevronRight, ChevronLeft } from 'lucide-svelte';
 import type { PageData } from './$types';
 
 let { data }: { data: PageData } = $props();
@@ -75,7 +75,7 @@ const sectionTitle = sections.find(s => s.id === data.currentSection)?.label || 
 									variant="outline"
 									class="px-4 md:px-6"
 								>
-									← Previous
+									<ChevronLeft/> Previous
 								</Button>
 							</a>
 						{/if}
@@ -83,9 +83,9 @@ const sectionTitle = sections.find(s => s.id === data.currentSection)?.label || 
 							<a href={`/tv?section=${data.currentSection}&page=${data.currentPage + 1}`} data-sveltekit-reload>
 								<Button
 									variant="outline"
-									class="px-4 md:px-6"
+									class="px-4 md:px-6 "
 								>
-									Next →
+									Next <ChevronRight/>
 								</Button>
 							</a>
 						{/if}
